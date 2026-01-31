@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Lock, User, Eye, EyeOff, ShieldCheck } from 'lucide-react'
-import { Button, Input, Label, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { Button, Input, Label, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui'
+import { ThemeToggle } from '../../components/ThemeToggle'
 
 export function Signup() {
   const [showPassword, setShowPassword] = useState(false)
@@ -27,7 +27,7 @@ export function Signup() {
 
       <div className="w-full max-w-md space-y-8 animate-in">
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[var(--radius-lg)] bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.7)] shadow-lg">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-linear-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.7)] shadow-lg glow-primary">
             <span className="text-2xl font-bold text-white">A</span>
           </div>
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">

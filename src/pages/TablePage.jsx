@@ -1,215 +1,63 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import {
-  Plus,
-  Download,
-  Filter,
   Search,
+  Filter,
+  Plus,
   MoreHorizontal,
-  Edit,
+  Mail,
+  User as UserIcon,
+  Phone,
+  Calendar,
   Trash2,
-  Eye,
-  X,
+  Edit,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import {
+  DataTable,
   Button,
   Input,
   Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
   Avatar,
-  DataTable,
   Dropdown,
   DropdownTrigger,
   DropdownContent,
   DropdownItem,
   DropdownSeparator,
   Modal,
-  ModalOverlay,
-  ModalContent,
   ModalHeader,
   ModalTitle,
   ModalDescription,
   ModalFooter,
-  ModalClose,
-} from '@/components/ui'
+} from '../components/ui'
+import { cn, formatCurrency } from '../lib/utils'
 
-// Sample users data
-const usersData = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    role: 'Admin',
-    status: 'active',
-    department: 'Engineering',
-    joinDate: '2023-01-15',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    role: 'Editor',
-    status: 'active',
-    department: 'Marketing',
-    joinDate: '2023-02-20',
-  },
-  {
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob@example.com',
-    role: 'Viewer',
-    status: 'inactive',
-    department: 'Sales',
-    joinDate: '2023-03-10',
-  },
-  {
-    id: 4,
-    name: 'Alice Williams',
-    email: 'alice@example.com',
-    role: 'Editor',
-    status: 'active',
-    department: 'Design',
-    joinDate: '2023-04-05',
-  },
-  {
-    id: 5,
-    name: 'Charlie Brown',
-    email: 'charlie@example.com',
-    role: 'Admin',
-    status: 'active',
-    department: 'Engineering',
-    joinDate: '2023-05-12',
-  },
-  {
-    id: 6,
-    name: 'Diana Ross',
-    email: 'diana@example.com',
-    role: 'Viewer',
-    status: 'pending',
-    department: 'HR',
-    joinDate: '2023-06-18',
-  },
-  {
-    id: 7,
-    name: 'Edward Norton',
-    email: 'edward@example.com',
-    role: 'Editor',
-    status: 'active',
-    department: 'Marketing',
-    joinDate: '2023-07-22',
-  },
-  {
-    id: 8,
-    name: 'Fiona Apple',
-    email: 'fiona@example.com',
-    role: 'Viewer',
-    status: 'inactive',
-    department: 'Finance',
-    joinDate: '2023-08-30',
-  },
-  {
-    id: 9,
-    name: 'George Lucas',
-    email: 'george@example.com',
-    role: 'Admin',
-    status: 'active',
-    department: 'Engineering',
-    joinDate: '2023-09-14',
-  },
-  {
-    id: 10,
-    name: 'Hannah Montana',
-    email: 'hannah@example.com',
-    role: 'Editor',
-    status: 'active',
-    department: 'Design',
-    joinDate: '2023-10-08',
-  },
-  {
-    id: 11,
-    name: 'Ian Malcolm',
-    email: 'ian@example.com',
-    role: 'Viewer',
-    status: 'pending',
-    department: 'Research',
-    joinDate: '2023-11-25',
-  },
-  {
-    id: 12,
-    name: 'Julia Roberts',
-    email: 'julia@example.com',
-    role: 'Editor',
-    status: 'active',
-    department: 'Marketing',
-    joinDate: '2023-12-01',
-  },
+// Mock Data
+const userData = [
+  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', department: 'Engineering', status: 'active', spend: 1200.50, joinDate: '2023-01-15' },
+  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', department: 'Marketing', status: 'active', spend: 450.00, joinDate: '2023-02-20' },
+  { id: 3, name: 'Charlie Brown', email: 'charlie@example.com', role: 'Viewer', department: 'Sales', status: 'inactive', spend: 0.00, joinDate: '2023-03-10' },
+  { id: 4, name: 'Diana Ross', email: 'diana@example.com', role: 'Admin', department: 'Engineering', status: 'active', spend: 2500.75, joinDate: '2023-01-05' },
+  { id: 5, name: 'Edward Norton', email: 'edward@example.com', role: 'Editor', department: 'Product', status: 'pending', spend: 120.00, joinDate: '2023-04-12' },
+  { id: 6, name: 'Fiona Apple', email: 'fiona@example.com', role: 'Viewer', department: 'Marketing', status: 'active', spend: 890.20, joinDate: '2023-02-28' },
+  { id: 7, name: 'George Clooney', email: 'george@example.com', role: 'Admin', department: 'Sales', status: 'inactive', spend: 3400.00, joinDate: '2022-12-15' },
+  { id: 8, name: 'Hannah Abbott', email: 'hannah@example.com', role: 'Editor', department: 'Engineering', status: 'active', spend: 670.50, joinDate: '2023-05-01' },
+  { id: 9, name: 'Ian Wright', email: 'ian@example.com', role: 'Viewer', department: 'Product', status: 'pending', spend: 45.00, joinDate: '2023-05-15' },
+  { id: 10, name: 'Jenny Slate', email: 'jenny@example.com', role: 'Admin', department: 'Marketing', status: 'active', spend: 1560.00, joinDate: '2023-03-25' },
+  { id: 11, name: 'Kevin Hart', email: 'kevin@example.com', role: 'Editor', department: 'Sales', status: 'active', spend: 2100.00, joinDate: '2023-02-10' },
+  { id: 12, name: 'Laura Palmer', email: 'laura@example.com', role: 'Viewer', department: 'Engineering', status: 'inactive', spend: 0.00, joinDate: '2023-06-01' },
 ]
-
-// Filter options
-const statusOptions = ['all', 'active', 'inactive', 'pending']
-const roleOptions = ['all', 'Admin', 'Editor', 'Viewer']
-const departmentOptions = [
-  'all',
-  'Engineering',
-  'Marketing',
-  'Sales',
-  'Design',
-  'HR',
-  'Finance',
-  'Research',
-]
-
-function getStatusBadge(status) {
-  const variants = {
-    active: 'success',
-    inactive: 'secondary',
-    pending: 'warning',
-  }
-  return <Badge variant={variants[status]}>{status}</Badge>
-}
-
-function getRoleBadge(role) {
-  const variants = {
-    Admin: 'default',
-    Editor: 'outline',
-    Viewer: 'secondary',
-  }
-  return <Badge variant={variants[role]}>{role}</Badge>
-}
 
 export function TablePage() {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [roleFilter, setRoleFilter] = useState('all')
-  const [departmentFilter, setDepartmentFilter] = useState('all')
-  const [showFilters, setShowFilters] = useState(false)
-  const [deleteModal, setDeleteModal] = useState({ open: false, user: null })
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
 
-  // Filter data
-  const filteredData = usersData.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter
-    const matchesDepartment =
-      departmentFilter === 'all' || user.department === departmentFilter
-
-    return matchesSearch && matchesStatus && matchesRole && matchesDepartment
-  })
-
-  // Active filters count
-  const activeFiltersCount =
-    (statusFilter !== 'all' ? 1 : 0) +
-    (roleFilter !== 'all' ? 1 : 0) +
-    (departmentFilter !== 'all' ? 1 : 0)
-
-  const clearFilters = () => {
-    setStatusFilter('all')
-    setRoleFilter('all')
-    setDepartmentFilter('all')
-  }
-
-  // Table columns
   const columns = [
     {
       key: 'name',
@@ -219,8 +67,8 @@ export function TablePage() {
         <div className="flex items-center gap-3">
           <Avatar alt={row.name} size="sm" />
           <div>
-            <p className="font-medium">{row.name}</p>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">{row.email}</p>
+            <div className="font-bold text-sm">{row.name}</div>
+            <div className="text-xs text-[hsl(var(--muted-foreground))]">{row.email}</div>
           </div>
         </div>
       ),
@@ -229,216 +77,161 @@ export function TablePage() {
       key: 'role',
       header: 'Role',
       sortable: true,
-      render: (row) => getRoleBadge(row.role),
+      render: (row) => (
+        <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-[hsl(var(--muted)/0.5)]">
+          {row.role}
+        </span>
+      ),
     },
-    {
-      key: 'department',
-      header: 'Department',
-      sortable: true,
-    },
+    { key: 'department', header: 'Department', sortable: true },
     {
       key: 'status',
       header: 'Status',
       sortable: true,
-      render: (row) => getStatusBadge(row.status),
+      render: (row) => (
+        <Badge variant={row.status === 'active' ? 'success' : row.status === 'pending' ? 'warning' : 'destructive'}>
+          {row.status}
+        </Badge>
+      ),
     },
     {
-      key: 'joinDate',
-      header: 'Join Date',
+      key: 'spend',
+      header: 'Total Spend',
       sortable: true,
-      render: (row) => new Date(row.joinDate).toLocaleDateString(),
+      headerClassName: 'text-right',
+      cellClassName: 'text-right font-black',
+      render: (row) => formatCurrency(row.spend),
     },
     {
       key: 'actions',
       header: '',
-      cellClassName: 'text-right',
+      headerClassName: 'w-[50px]',
       render: (row) => (
-        <Dropdown>
-          <DropdownTrigger asChild>
-            <button className="inline-flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] hover:bg-[hsl(var(--accent))]">
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </DropdownTrigger>
-          <DropdownContent align="end">
-            <DropdownItem>
-              <Eye className="h-4 w-4" />
-              <span>View</span>
-            </DropdownItem>
-            <DropdownItem>
-              <Edit className="h-4 w-4" />
-              <span>Edit</span>
-            </DropdownItem>
-            <DropdownSeparator />
-            <DropdownItem
-              destructive
-              onClick={() => setDeleteModal({ open: true, user: row })}
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Delete</span>
-            </DropdownItem>
-          </DropdownContent>
-        </Dropdown>
+        <div className="flex justify-end">
+          <Dropdown>
+            <DropdownTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownTrigger>
+            <DropdownContent align="end" className="w-40">
+              <DropdownItem className="gap-2">
+                <Edit className="h-3.5 w-3.5" /> Edit User
+              </DropdownItem>
+              <DropdownItem className="gap-2">
+                <Mail className="h-3.5 w-3.5" /> Message
+              </DropdownItem>
+              <DropdownSeparator />
+              <DropdownItem
+                destructive
+                className="gap-2"
+                onClick={() => {
+                  setSelectedUser(row)
+                  setIsDeleteModalOpen(true)
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </DropdownItem>
+            </DropdownContent>
+          </Dropdown>
+        </div>
       ),
     },
   ]
 
+  const filteredData = useMemo(() => {
+    return userData.filter((user) => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesStatus = statusFilter === 'all' || user.status === statusFilter
+      return matchesSearch && matchesStatus
+    })
+  }, [searchTerm, statusFilter])
+
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-8 animate-in">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-          <p className="text-[hsl(var(--muted-foreground))]">
-            Manage your team members and their permissions.
-          </p>
+          <h1 className="text-3xl font-black tracking-tight bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.6)] bg-clip-text text-transparent">
+            User Directory
+          </h1>
+          <p className="text-[hsl(var(--muted-foreground))] font-medium mt-1">Manage and monitor all platform users in one place.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-          <Button>
-            <Plus className="h-4 w-4" />
-            Add User
-          </Button>
-        </div>
+        <Button className="rounded-xl shadow-lg glow-primary">
+          <Plus className="h-4 w-4 mr-2" /> Add New User
+        </Button>
       </div>
 
-      {/* Filters Bar */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 gap-2">
-          <div className="w-full sm:w-80">
-            <Input
-              type="search"
-              placeholder="Search users..."
-              icon={Search}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+      <Card className="border-[hsl(var(--border)/0.5)] shadow-xl overflow-visible">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between pb-6 border-b border-[hsl(var(--border)/0.5)] mb-6">
+            <div className="relative group max-w-sm w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))] transition-colors group-focus-within:text-[hsl(var(--primary))]" />
+              <Input
+                placeholder="Search users by name or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 p-1 bg-[hsl(var(--muted)/0.5)] rounded-xl border border-[hsl(var(--border)/0.5)]">
+                {['all', 'active', 'pending', 'inactive'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={cn(
+                      'px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all',
+                      statusFilter === status
+                        ? 'bg-[hsl(var(--card))] text-[hsl(var(--primary))] shadow-sm'
+                        : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
+                    )}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="table-container animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+            <DataTable
+              data={filteredData}
+              columns={columns}
+              pageSize={8}
+              emptyMessage="We couldn't find any users matching your criteria."
             />
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className={cn(showFilters && 'bg-[hsl(var(--accent))]')}
-          >
-            <Filter className="h-4 w-4" />
-            Filters
-            {activeFiltersCount > 0 && (
-              <Badge variant="default" className="ml-1 h-5 w-5 rounded-full p-0">
-                {activeFiltersCount}
-              </Badge>
-            )}
-          </Button>
-        </div>
-        <p className="text-sm text-[hsl(var(--muted-foreground))]">
-          {filteredData.length} of {usersData.length} users
-        </p>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Expanded Filters */}
-      {showFilters && (
-        <div className="animate-in flex flex-wrap items-center gap-4 rounded-[var(--radius-lg)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Status:</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className={cn(
-                'h-9 rounded-[var(--radius-md)] border border-[hsl(var(--input))]',
-                'bg-[hsl(var(--background))] px-3 text-sm',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]'
-              )}
-            >
-              {statusOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option === 'all' ? 'All Status' : option}
-                </option>
-              ))}
-            </select>
+      <Modal open={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+        <ModalHeader>
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--destructive)/0.1)] mb-4">
+            <Trash2 className="h-7 w-7 text-[hsl(var(--destructive))]" />
           </div>
-
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Role:</label>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className={cn(
-                'h-9 rounded-[var(--radius-md)] border border-[hsl(var(--input))]',
-                'bg-[hsl(var(--background))] px-3 text-sm',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]'
-              )}
-            >
-              {roleOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option === 'all' ? 'All Roles' : option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Department:</label>
-            <select
-              value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
-              className={cn(
-                'h-9 rounded-[var(--radius-md)] border border-[hsl(var(--input))]',
-                'bg-[hsl(var(--background))] px-3 text-sm',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]'
-              )}
-            >
-              {departmentOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option === 'all' ? 'All Departments' : option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {activeFiltersCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={clearFilters}>
-              <X className="h-4 w-4" />
-              Clear all
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Data Table */}
-      <DataTable
-        data={filteredData}
-        columns={columns}
-        pageSize={8}
-        emptyMessage="No users found matching your filters."
-      />
-
-      {/* Delete Confirmation Modal */}
-      <Modal open={deleteModal.open} onOpenChange={(open) => setDeleteModal({ open, user: null })}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalClose />
-          <ModalHeader>
-            <ModalTitle>Delete User</ModalTitle>
-            <ModalDescription>
-              Are you sure you want to delete {deleteModal.user?.name}? This action cannot be
-              undone.
-            </ModalDescription>
-          </ModalHeader>
-          <ModalFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteModal({ open: false, user: null })}
-            >
+          <ModalTitle className="text-center">Confirm Deletion</ModalTitle>
+          <ModalDescription className="text-center max-w-[280px] mx-auto">
+            Are you sure you want to delete <span className="font-bold text-[hsl(var(--foreground))]">{selectedUser?.name}</span>? This action is permanent.
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <div className="grid grid-cols-2 gap-3 w-full">
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
               Cancel
             </Button>
             <Button
               variant="destructive"
-              onClick={() => setDeleteModal({ open: false, user: null })}
+              onClick={() => {
+                // Handle delete logic
+                setIsDeleteModalOpen(false)
+              }}
             >
-              Delete
+              Confirm Delete
             </Button>
-          </ModalFooter>
-        </ModalContent>
+          </div>
+        </ModalFooter>
       </Modal>
     </div>
   )

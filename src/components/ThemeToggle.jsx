@@ -1,35 +1,35 @@
-import { Moon, Sun } from 'lucide-react'
-import { useTheme } from '@/context/ThemeContext'
-import { cn } from '@/lib/utils'
+import { Sun, Moon } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTheme } from '../context/ThemeContext'
+import { Button } from './ui'
 
-export function ThemeToggle({ className }) {
-  const { theme, toggleTheme } = useTheme()
+export function ThemeToggle() {
+  const { isDark, toggleTheme } = useTheme()
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={toggleTheme}
-      className={cn(
-        'relative inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)]',
-        'bg-[hsl(var(--muted))] hover:bg-[hsl(var(--muted-foreground)/0.1)]',
-        'text-[hsl(var(--foreground))]',
-        'transition-all duration-[var(--transition-normal)]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]',
-        className
-      )}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      className="relative h-10 w-10 rounded-xl hover:bg-[hsl(var(--accent))] overflow-hidden"
+      aria-label="Toggle theme"
     >
-      <Sun
-        className={cn(
-          'h-5 w-5 transition-all duration-[var(--transition-normal)]',
-          theme === 'dark' ? 'rotate-90 scale-0' : 'rotate-0 scale-100'
-        )}
-      />
-      <Moon
-        className={cn(
-          'absolute h-5 w-5 transition-all duration-[var(--transition-normal)]',
-          theme === 'dark' ? 'rotate-0 scale-100' : '-rotate-90 scale-0'
-        )}
-      />
-    </button>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={isDark ? 'dark' : 'light'}
+          initial={{ y: 20, opacity: 0, rotate: -45 }}
+          animate={{ y: 0, opacity: 1, rotate: 0 }}
+          exit={{ y: -20, opacity: 0, rotate: 45 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="flex items-center justify-center"
+        >
+          {isDark ? (
+            <Moon className="h-5 w-5 text-[hsl(var(--primary))]" />
+          ) : (
+            <Sun className="h-5 w-5 text-[hsl(var(--primary))]" />
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </Button>
   )
 }

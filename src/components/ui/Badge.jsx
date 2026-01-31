@@ -1,34 +1,22 @@
 import { cva } from 'class-variance-authority'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
-const badgeVariants = cva(
-  [
-    'inline-flex items-center rounded-[var(--radius-full)]',
-    'px-2.5 py-0.5 text-xs font-medium',
-    'transition-colors duration-[var(--transition-normal)]',
-  ],
+export const badgeVariants = cva(
+  'inline-flex items-center rounded-full px-3 py-0.5 text-xs font-semibold transition-all border shadow-sm',
   {
     variants: {
       variant: {
-        default: [
-          'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]',
-        ],
-        secondary: [
-          'bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]',
-        ],
-        outline: [
-          'border border-[hsl(var(--border))]',
-          'text-[hsl(var(--foreground))]',
-        ],
-        destructive: [
-          'bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))]',
-        ],
-        success: [
-          'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]',
-        ],
-        warning: [
-          'bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))]',
-        ],
+        default:
+          'border-transparent bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-md glow-primary',
+        secondary:
+          'border-transparent bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]',
+        outline: 'border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-transparent',
+        destructive:
+          'border-transparent bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] border-[hsl(var(--destructive)/0.2)]',
+        success:
+          'border-transparent bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))] border-[hsl(var(--success)/0.2)]',
+        warning:
+          'border-transparent bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))] border-[hsl(var(--warning)/0.2)]',
       },
     },
     defaultVariants: {
@@ -37,10 +25,8 @@ const badgeVariants = cva(
   }
 )
 
-function Badge({ className, variant, ...props }) {
+export function Badge({ className, variant, ...props }) {
   return (
-    <span className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
   )
 }
-
-export { Badge, badgeVariants }

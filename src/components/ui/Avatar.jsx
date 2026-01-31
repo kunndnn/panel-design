@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import { cva } from 'class-variance-authority'
-import { cn, getInitials } from '@/lib/utils'
+import { cn, getInitials } from '../../lib/utils'
 
 const avatarVariants = cva(
   [

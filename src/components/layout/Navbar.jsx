@@ -1,11 +1,8 @@
-import { useState } from 'react'
-import { Search, Bell, LogOut, User, Settings } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { MobileMenuButton, useSidebar } from './Sidebar'
+import { Bell, Search, User, LogOut, Settings, HelpCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useSidebar, MobileMenuButton } from './Sidebar'
 import {
-  Avatar,
-  Badge,
+  Button,
   Input,
   Dropdown,
   DropdownTrigger,
@@ -13,151 +10,109 @@ import {
   DropdownItem,
   DropdownSeparator,
   DropdownLabel,
-} from '@/components/ui'
-
-// Sample notifications
-const notifications = [
-  { id: 1, title: 'New user registered', time: '5 min ago', unread: true },
-  { id: 2, title: 'Server backup completed', time: '1 hour ago', unread: true },
-  { id: 3, title: 'Payment received', time: '2 hours ago', unread: false },
-]
+  Avatar,
+  Badge,
+} from '../ui'
+import { ThemeToggle } from '../ThemeToggle'
+import { cn } from '../../lib/utils'
 
 export function Navbar() {
   const { isCollapsed } = useSidebar()
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const unreadCount = notifications.filter((n) => n.unread).length
 
   return (
     <header
       className={cn(
-        'fixed right-0 top-0 z-30 flex h-[var(--navbar-height)] items-center justify-between',
-        'border-b border-[hsl(var(--border))]',
-        'bg-[hsl(var(--background))/0.95] backdrop-blur-md',
-        'px-4 lg:px-6',
-        'transition-all duration-[var(--transition-slow)]',
+        'fixed top-0 right-0 z-30 h-(--navbar-height)',
+        'glass-nav transition-all duration-(--transition-slow) ease-in-out',
+        'left-0 lg:left-0',
         isCollapsed
-          ? 'left-0 lg:left-[var(--sidebar-collapsed-width)]'
-          : 'left-0 lg:left-[var(--sidebar-width)]'
+          ? 'lg:left-0'
+          : 'lg:left-0'
       )}
     >
-      {/* Left side - Mobile menu + Search */}
-      <div className="flex items-center gap-4">
-        <MobileMenuButton />
+      <div className={cn(
+        'flex h-full items-center justify-between px-4 lg:px-8 transition-all duration-(--transition-slow)',
+        isCollapsed ? 'lg:pl-[calc(var(--sidebar-collapsed-width)+2rem)]' : 'lg:pl-[calc(var(--sidebar-width)+2rem)]'
+      )}>
+        <div className="flex items-center gap-4">
+          <MobileMenuButton />
 
-        <div className="hidden sm:block">
-          <Input
-            type="search"
-            placeholder="Search..."
-            icon={Search}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-64 lg:w-80"
-          />
+          <div className="hidden md:flex relative group max-w-md w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))] transition-colors group-focus-within:text-[hsl(var(--primary))]" />
+            <Input
+              type="search"
+              placeholder="Search anything..."
+              className="pl-10 w-[300px] lg:w-[400px] border-none bg-[hsl(var(--muted)/0.5)] rounded-xl focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary)/0.3)] transition-all"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Right side - Actions */}
-      <div className="flex items-center gap-2">
-        {/* Mobile Search Button */}
-        <button
-          className={cn(
-            'inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)]',
-            'text-[hsl(var(--foreground))]',
-            'transition-colors hover:bg-[hsl(var(--accent))]',
-            'sm:hidden'
-          )}
-        >
-          <Search className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-2 lg:gap-4">
+          <ThemeToggle />
 
-        {/* Notifications */}
-        <Dropdown>
-          <DropdownTrigger asChild>
-            <button
-              className={cn(
-                'relative inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)]',
-                'text-[hsl(var(--foreground))]',
-                'transition-colors hover:bg-[hsl(var(--accent))]'
-              )}
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span
-                  className={cn(
-                    'absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center',
-                    'rounded-full bg-[hsl(var(--destructive))] text-[10px] font-medium text-white'
-                  )}
-                >
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-          </DropdownTrigger>
-          <DropdownContent align="end" className="w-80">
-            <DropdownLabel>Notifications</DropdownLabel>
-            <DropdownSeparator />
-            {notifications.map((notification) => (
-              <DropdownItem key={notification.id} className="flex flex-col items-start gap-1">
-                <div className="flex w-full items-center justify-between">
-                  <span className="font-medium">{notification.title}</span>
-                  {notification.unread && (
-                    <span className="h-2 w-2 rounded-full bg-[hsl(var(--primary))]" />
-                  )}
-                </div>
-                <span className="text-xs text-[hsl(var(--muted-foreground))]">
-                  {notification.time}
-                </span>
-              </DropdownItem>
-            ))}
-            <DropdownSeparator />
-            <DropdownItem className="justify-center text-[hsl(var(--primary))]">
-              View all notifications
-            </DropdownItem>
-          </DropdownContent>
-        </Dropdown>
-
-        {/* Theme Toggle */}
-        <ThemeToggle />
-
-        {/* User Menu */}
-        <Dropdown>
-          <DropdownTrigger asChild>
-            <button
-              className={cn(
-                'flex items-center gap-3 rounded-[var(--radius-md)] p-1.5',
-                'transition-colors hover:bg-[hsl(var(--accent))]'
-              )}
-            >
-              <Avatar
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-                alt="John Doe"
-                size="sm"
-              />
-              <div className="hidden text-left lg:block">
-                <p className="text-sm font-medium">John Doe</p>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">Admin</p>
+          <Dropdown>
+            <DropdownTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-[hsl(var(--accent))]">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[hsl(var(--primary))] ring-2 ring-[hsl(var(--background))]" />
+              </Button>
+            </DropdownTrigger>
+            <DropdownContent align="end" className="w-80 p-0">
+              <div className="p-4 border-b border-[hsl(var(--border))]">
+                <h3 className="font-semibold">Notifications</h3>
               </div>
-            </button>
-          </DropdownTrigger>
-          <DropdownContent align="end" className="w-56">
-            <DropdownLabel>My Account</DropdownLabel>
-            <DropdownSeparator />
-            <DropdownItem>
-              <User className="h-4 w-4" />
-              <span>Profile</span>
-            </DropdownItem>
-            <DropdownItem>
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-            </DropdownItem>
-            <DropdownSeparator />
-            <DropdownItem destructive>
-              <LogOut className="h-4 w-4" />
-              <span>Log out</span>
-            </DropdownItem>
-          </DropdownContent>
-        </Dropdown>
+              <div className="max-h-80 overflow-y-auto">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-4 flex gap-3 hover:bg-[hsl(var(--muted)/0.5)] transition-colors cursor-pointer border-b border-[hsl(var(--border)/0.5)] last:border-0">
+                    <div className="h-10 w-10 rounded-full bg-[hsl(var(--primary)/0.1)] flex items-center justify-center shrink-0">
+                      <Bell className="h-5 w-5 text-[hsl(var(--primary))]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">New sales report is ready</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">2 minutes ago</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-2">
+                <Button variant="ghost" className="w-full text-xs h-8">View all notifications</Button>
+              </div>
+            </DropdownContent>
+          </Dropdown>
+
+          <Dropdown>
+            <DropdownTrigger asChild>
+              <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[hsl(var(--accent))] transition-all group">
+                <Avatar
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+                  alt="User"
+                  className="h-9 w-9 border-2 border-[hsl(var(--primary)/0.2)] group-hover:border-[hsl(var(--primary)/0.5)] transition-all"
+                />
+                <div className="hidden sm:block text-left mr-2">
+                  <p className="text-sm font-semibold leading-none">John Doe</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">Admin</p>
+                </div>
+              </button>
+            </DropdownTrigger>
+            <DropdownContent align="end" className="w-56 mt-2">
+              <DropdownLabel>My Account</DropdownLabel>
+              <DropdownSeparator />
+              <DropdownItem className="gap-2">
+                <User className="h-4 w-4" /> Profile
+              </DropdownItem>
+              <DropdownItem className="gap-2">
+                <Settings className="h-4 w-4" /> Settings
+              </DropdownItem>
+              <DropdownItem className="gap-2">
+                <HelpCircle className="h-4 w-4" /> Help Center
+              </DropdownItem>
+              <DropdownSeparator />
+              <DropdownItem destructive className="gap-2">
+                <LogOut className="h-4 w-4" /> Sign out
+              </DropdownItem>
+            </DropdownContent>
+          </Dropdown>
+        </div>
       </div>
     </header>
   )

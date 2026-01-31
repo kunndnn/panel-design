@@ -1,76 +1,80 @@
 import { useState, useRef, useEffect } from 'react'
-import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '../../lib/utils'
 
-function Tooltip({ children, content, side = 'top', className }) {
+export function Tooltip({ children, content, side = 'top', className }) {
   const [isVisible, setIsVisible] = useState(false)
-  const [position, setPosition] = useState({ top: 0, left: 0 })
-  const triggerRef = useRef(null)
-  const tooltipRef = useRef(null)
+  const timeoutRef = useRef(null)
+
+  const showTooltip = () => {
+    timeoutRef.current = setTimeout(() => setIsVisible(true), 200)
+  }
+
+  const hideTooltip = () => {
+    clearTimeout(timeoutRef.current)
+    setIsVisible(false)
+  }
 
   useEffect(() => {
-    if (isVisible && triggerRef.current && tooltipRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect()
-      const tooltipRect = tooltipRef.current.getBoundingClientRect()
+    return () => clearTimeout(timeoutRef.current)
+  }, [])
 
-      let top, left
+  const sideStyles = {
+    top: '-translate-x-1/2 bottom-full mb-3 left-1/2',
+    bottom: '-translate-x-1/2 top-full mt-3 left-1/2',
+    left: '-translate-y-1/2 right-full mr-3 top-1/2',
+    right: '-translate-y-1/2 left-full ml-3 top-1/2',
+  }
 
-      switch (side) {
-        case 'top':
-          top = triggerRect.top - tooltipRect.height - 8
-          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2
-          break
-        case 'bottom':
-          top = triggerRect.bottom + 8
-          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2
-          break
-        case 'left':
-          top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2
-          left = triggerRect.left - tooltipRect.width - 8
-          break
-        case 'right':
-          top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2
-          left = triggerRect.right + 8
-          break
-        default:
-          top = triggerRect.top - tooltipRect.height - 8
-          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2
-      }
-
-      setPosition({ top, left })
-    }
-  }, [isVisible, side])
+  const animationVariants = {
+    initial: {
+      opacity: 0,
+      scale: 0.9,
+      y: side === 'top' ? 4 : side === 'bottom' ? -4 : 0,
+      x: side === 'left' ? 4 : side === 'right' ? -4 : 0
+    },
+    animate: { opacity: 1, scale: 1, y: 0, x: 0 },
+    exit: { opacity: 0, scale: 0.9 }
+  }
 
   return (
-    <div className="relative inline-flex">
-      <div
-        ref={triggerRef}
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        onFocus={() => setIsVisible(true)}
-        onBlur={() => setIsVisible(false)}
-      >
-        {children}
-      </div>
-
-      {isVisible && (
-        <div
-          ref={tooltipRef}
-          role="tooltip"
-          className={cn(
-            'fixed z-50 px-3 py-1.5 text-xs font-medium',
-            'rounded-[var(--radius-md)]',
-            'bg-[hsl(var(--foreground))] text-[hsl(var(--background))]',
-            'shadow-[var(--shadow-md)]',
-            'animate-in',
-            className
-          )}
-          style={{ top: position.top, left: position.left }}
-        >
-          {content}
-        </div>
-      )}
+    <div
+      className="relative inline-flex items-center"
+      onMouseEnter={showTooltip}
+      onMouseLeave={hideTooltip}
+      onFocus={showTooltip}
+      onBlur={hideTooltip}
+    >
+      {children}
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            variants={animationVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className={cn(
+              'absolute z-50 whitespace-nowrap rounded-xl bg-[hsl(var(--foreground))] px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-[hsl(var(--background))] shadow-xl ring-1 ring-[hsl(var(--foreground)/0.1)]',
+              sideStyles[side],
+              className
+            )}
+            role="tooltip"
+          >
+            {content}
+            {/* Arrow */}
+            <div
+              className={cn(
+                'absolute h-2 w-2 rotate-45 bg-[hsl(var(--foreground))]',
+                side === 'top' && 'bottom-[-4px] left-1/2 -translate-x-1/2',
+                side === 'bottom' && 'top-[-4px] left-1/2 -translate-x-1/2',
+                side === 'left' && 'right-[-4px] top-1/2 -translate-y-1/2',
+                side === 'right' && 'left-[-4px] top-1/2 -translate-y-1/2'
+              )}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
-
-export { Tooltip }

@@ -1,21 +1,24 @@
 import { useState, useMemo } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '../../lib/utils'
 import { Button } from './Button'
 
 function Table({ children, className }) {
   return (
-    <div className="relative w-full overflow-auto rounded-[var(--radius-lg)] border border-[hsl(var(--border))]">
-      <table className={cn('w-full caption-bottom text-sm', className)}>
-        {children}
-      </table>
+    <div className="relative w-full overflow-hidden rounded-2xl border border-[hsl(var(--border)/0.5)] glass shadow-xl">
+      <div className="overflow-auto">
+        <table className={cn('w-full caption-bottom text-sm', className)}>
+          {children}
+        </table>
+      </div>
     </div>
   )
 }
 
 function TableHeader({ children, className }) {
   return (
-    <thead className={cn('bg-[hsl(var(--muted))]', className)}>
+    <thead className={cn('bg-[hsl(var(--muted)/0.3)] backdrop-blur-sm', className)}>
       {children}
     </thead>
   )
@@ -27,18 +30,20 @@ function TableBody({ children, className }) {
 
 function TableRow({ children, className, onClick, selected }) {
   return (
-    <tr
+    <motion.tr
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       onClick={onClick}
       className={cn(
-        'border-b border-[hsl(var(--border))] transition-colors',
-        'hover:bg-[hsl(var(--muted)/0.5)]',
-        onClick && 'cursor-pointer',
-        selected && 'bg-[hsl(var(--muted))]',
+        'border-b border-[hsl(var(--border)/0.3)] transition-all',
+        'hover:bg-[hsl(var(--primary)/0.02)]',
+        onClick && 'cursor-pointer active:scale-[0.99]',
+        selected && 'bg-[hsl(var(--primary)/0.05)]',
         className
       )}
     >
       {children}
-    </tr>
+    </motion.tr>
   )
 }
 
@@ -47,23 +52,23 @@ function TableHead({ children, className, sortable, sorted, sortDirection, onSor
     <th
       onClick={sortable ? onSort : undefined}
       className={cn(
-        'h-12 px-4 text-left align-middle font-medium text-[hsl(var(--muted-foreground))]',
-        sortable && 'cursor-pointer select-none hover:text-[hsl(var(--foreground))]',
+        'h-14 px-4 text-left align-middle font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))] text-[10px]',
+        sortable && 'cursor-pointer select-none hover:text-[hsl(var(--primary))] transition-colors',
         className
       )}
     >
       <div className="flex items-center gap-2">
         {children}
         {sortable && (
-          <span className="inline-flex">
+          <span className="inline-flex transition-transform duration-300">
             {sorted ? (
               sortDirection === 'asc' ? (
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className="h-3.5 w-3.5 text-[hsl(var(--primary))]" />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-3.5 w-3.5 text-[hsl(var(--primary))]" />
               )
             ) : (
-              <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                <ChevronsUpDown className="h-3.5 w-3.5 opacity-30" />
             )}
           </span>
         )}
@@ -74,7 +79,7 @@ function TableHead({ children, className, sortable, sorted, sortDirection, onSor
 
 function TableCell({ children, className }) {
   return (
-    <td className={cn('p-4 align-middle', className)}>
+    <td className={cn('p-4 align-middle font-medium', className)}>
       {children}
     </td>
   )
@@ -86,11 +91,16 @@ function TableEmpty({ children, className, colSpan }) {
       <td
         colSpan={colSpan}
         className={cn(
-          'h-24 text-center text-[hsl(var(--muted-foreground))]',
+          'h-32 text-center text-[hsl(var(--muted-foreground))] font-semibold',
           className
         )}
       >
-        {children || 'No results found.'}
+        <div className="flex flex-col items-center justify-center gap-2">
+          <div className="h-12 w-12 rounded-full bg-[hsl(var(--muted)/0.5)] flex items-center justify-center">
+            <ChevronsUpDown className="h-6 w-6 opacity-20" />
+          </div>
+          {children || 'No results found.'}
+        </div>
       </td>
     </tr>
   )
@@ -110,19 +120,18 @@ function TablePagination({
   return (
     <div
       className={cn(
-        'flex items-center justify-between border-t border-[hsl(var(--border))] px-4 py-3',
+        'flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-[hsl(var(--card))] border-t border-[hsl(var(--border)/0.5)]',
         className
       )}
     >
-      <p className="text-sm text-[hsl(var(--muted-foreground))]">
-        Showing <span className="font-medium">{startItem}</span> to{' '}
-        <span className="font-medium">{endItem}</span> of{' '}
-        <span className="font-medium">{totalItems}</span> results
+      <p className="text-xs font-bold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
+        Showing <span className="text-[hsl(var(--foreground))]">{startItem}</span> - <span className="text-[hsl(var(--foreground))]">{endItem}</span> of <span className="text-[hsl(var(--foreground))]">{totalItems}</span>
       </p>
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="icon"
+          className="h-9 w-9 rounded-lg"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -144,7 +153,10 @@ function TablePagination({
               <Button
                 key={pageNum}
                 variant={currentPage === pageNum ? 'default' : 'ghost'}
-                size="icon"
+                className={cn(
+                  'h-9 w-9 rounded-lg font-bold text-xs',
+                  currentPage === pageNum ? 'shadow-md glow-primary' : ''
+                )}
                 onClick={() => onPageChange(pageNum)}
               >
                 {pageNum}
@@ -155,6 +167,7 @@ function TablePagination({
         <Button
           variant="outline"
           size="icon"
+          className="h-9 w-9 rounded-lg"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -165,7 +178,6 @@ function TablePagination({
   )
 }
 
-// Higher-order component for sortable/paginated tables
 function DataTable({
   data,
   columns,
@@ -205,10 +217,10 @@ function DataTable({
   }
 
   return (
-    <div className={className}>
+    <div className={cn('space-y-4', className)}>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             {columns.map((column) => (
               <TableHead
                 key={column.key}
@@ -224,22 +236,24 @@ function DataTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {paginatedData.length === 0 ? (
-            <TableEmpty colSpan={columns.length}>{emptyMessage}</TableEmpty>
-          ) : (
-            paginatedData.map((row, rowIndex) => (
-              <TableRow
-                key={row.id || rowIndex}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
-              >
-                {columns.map((column) => (
-                  <TableCell key={column.key} className={column.cellClassName}>
-                    {column.render ? column.render(row) : row[column.key]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          )}
+          <AnimatePresence mode="popLayout">
+            {paginatedData.length === 0 ? (
+              <TableEmpty colSpan={columns.length}>{emptyMessage}</TableEmpty>
+            ) : (
+              paginatedData.map((row, rowIndex) => (
+                <TableRow
+                  key={row.id || rowIndex}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                >
+                  {columns.map((column) => (
+                    <TableCell key={column.key} className={column.cellClassName}>
+                      {column.render ? column.render(row) : row[column.key]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </AnimatePresence>
         </TableBody>
       </Table>
       {totalPages > 1 && (
@@ -249,6 +263,7 @@ function DataTable({
           onPageChange={setCurrentPage}
           pageSize={pageSize}
           totalItems={data.length}
+          className="rounded-2xl border border-[hsl(var(--border)/0.5)] shadow-sm"
         />
       )}
     </div>

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import {
   TrendingUp,
   TrendingDown,
@@ -8,6 +9,7 @@ import {
   ArrowUpRight,
   MoreHorizontal,
   Plus,
+  ArrowRight,
 } from 'lucide-react'
 import {
   LineChart,
@@ -26,7 +28,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import { cn, formatNumber, formatCurrency } from '@/lib/utils'
+import { cn, formatNumber, formatCurrency } from '../lib/utils'
 import {
   Card,
   CardContent,
@@ -40,7 +42,7 @@ import {
   DropdownTrigger,
   DropdownContent,
   DropdownItem,
-} from '@/components/ui'
+} from '../components/ui'
 
 // Mock Data for Charts
 const revenueData = [
@@ -73,7 +75,7 @@ const trafficData = [
   { name: 'Referral', value: 200 },
 ]
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444']
 
 const stats = [
   {
@@ -83,30 +85,34 @@ const stats = [
     trend: 'up',
     icon: DollarSign,
     format: 'currency',
+    color: 'primary',
   },
   {
-    title: 'Subscriptions',
+    title: 'Active Users',
     value: 2350,
     change: 180.1,
     trend: 'up',
     icon: Users,
     format: 'number',
+    color: 'success',
   },
   {
-    title: 'Sales',
+    title: 'Total Sales',
     value: 12234,
-    change: -19,
+    change: -4.5,
     trend: 'down',
     icon: ShoppingCart,
     format: 'number',
+    color: 'warning',
   },
   {
-    title: 'Active Now',
-    value: 573,
-    change: 201,
+    title: 'Conversion Rate',
+    value: 12.5,
+    change: 1.2,
     trend: 'up',
     icon: Activity,
-    format: 'number',
+    format: 'percent',
+    color: 'destructive',
   },
 ]
 
@@ -119,51 +125,79 @@ const recentOrders = [
   { id: 'ORD-005', customer: 'Sofia Davis', email: 'sofia@example.com', amount: 39.0, status: 'completed' },
 ]
 
-function StatCard({ title, value, change, trend, icon: Icon, format }) {
-  const formattedValue = format === 'currency' ? formatCurrency(value) : formatNumber(value)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
+}
+
+function StatCard({ title, value, change, trend, icon: Icon, format, color }) {
+  const formattedValue = format === 'currency'
+    ? formatCurrency(value)
+    : format === 'percent'
+      ? `${value}%`
+      : formatNumber(value)
   const isPositive = trend === 'up'
 
   return (
-    <Card className="hover:shadow-md transition-shadow duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-[hsl(var(--muted-foreground))]">{title}</CardTitle>
-        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[hsl(var(--primary)/0.1)]">
-          <Icon className="h-5 w-5 text-[hsl(var(--primary))]" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{formattedValue}</div>
-        <div className="flex items-center gap-1 mt-1">
-          {isPositive ? (
-            <TrendingUp className="h-4 w-4 text-[hsl(var(--success))]" />
-          ) : (
-            <TrendingDown className="h-4 w-4 text-[hsl(var(--destructive))]" />
-          )}
-          <span className={cn('text-xs font-medium', isPositive ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--destructive))]')}>
-            {isPositive ? '+' : ''}{change}%
-          </span>
-          <span className="text-xs text-[hsl(var(--muted-foreground))]">from last month</span>
-        </div>
-      </CardContent>
-    </Card>
+    <motion.div variants={itemVariants}>
+      <Card className="group relative overflow-hidden">
+        <div className={cn(
+          "absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-5 transition-transform duration-500 group-hover:scale-125 bg-current",
+          `text-[hsl(var(--primary))]`
+        )} />
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className={cn(
+              "flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.7)] shadow-lg glow-primary"
+            )}>
+              <Icon className="h-6 w-6 text-white" />
+            </div>
+            <div className={cn(
+              'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold',
+              isPositive
+                ? 'bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]'
+                : 'bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]'
+            )}>
+              {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+              {isPositive ? '+' : ''}{change}%
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="text-sm font-medium text-[hsl(var(--muted-foreground))]">{title}</p>
+            <h3 className="text-3xl font-bold tracking-tight mt-1">{formattedValue}</h3>
+          </div>
+          <div className="mt-4 flex items-center text-xs text-[hsl(var(--muted-foreground))] font-medium">
+            <span className="text-[hsl(var(--primary))] font-bold mr-1">Snapshot:</span> last 30 days
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
-function getStatusBadge(status) {
-  const variants = { completed: 'success', pending: 'warning', failed: 'destructive' }
-  return <Badge variant={variants[status]}>{status}</Badge>
-}
-
-// Custom Tooltip for Recharts that matches our theme
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--popover))] p-3 shadow-lg">
-        <p className="text-sm font-semibold">{label}</p>
+      <div className="rounded-xl border border-[hsl(var(--border)/0.5)] bg-[hsl(var(--popover)/0.8)] backdrop-blur-md p-4 shadow-xl">
+        <p className="text-sm font-bold border-b border-[hsl(var(--border)/0.5)] pb-2 mb-2">{label}</p>
         {payload.map((item, index) => (
-          <p key={index} className="text-xs" style={{ color: item.color || item.fill }}>
-            {item.name}: {item.value}
-          </p>
+          <div key={index} className="flex items-center justify-between gap-4 py-1">
+            <span className="flex items-center gap-2 text-xs font-semibold">
+              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color || item.fill }} />
+              {item.name}
+            </span>
+            <span className="text-sm font-bold">{item.value}</span>
+          </div>
         ))}
       </div>
     )
@@ -173,170 +207,172 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export function Dashboard() {
   return (
-    <div className="space-y-6 animate-in">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-8"
+    >
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
-          <p className="text-[hsl(var(--muted-foreground))]">Real-time performance metrics and business analytics.</p>
+          <h1 className="text-3xl font-black tracking-tight bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.6)] bg-clip-text text-transparent">
+            Overview Dashboard
+          </h1>
+          <p className="text-[hsl(var(--muted-foreground))] font-medium mt-1">
+            Welcome back, <span className="text-[hsl(var(--foreground))] font-bold">John Doe</span>. Here's what's happening.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">Download CSV</Button>
-          <Button><Plus className="h-4 w-4" /> New Report</Button>
+        <div className="flex gap-3">
+          <Button variant="outline" className="rounded-xl">Export Report</Button>
+          <Button className="rounded-xl shadow-lg glow-primary">
+            <Plus className="h-4 w-4 mr-2" /> Action
+          </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.title} {...stat} />
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-8 grid-cols-1 lg:grid-cols-2">
         {/* Line Chart - Revenue */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue Over Time</CardTitle>
-            <CardDescription>Monthly growth and revenue patterns</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tickFormatter={(value) => `$${value}`} />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ fill: 'hsl(var(--primary))', r: 4 }} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <motion.div variants={itemVariants}>
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Revenue Insights</CardTitle>
+                <CardDescription>Performance trends over the fiscal year</CardDescription>
+              </div>
+              <Badge variant="outline" className="font-bold">LIVE</Badge>
+            </CardHeader>
+            <CardContent className="h-[350px] pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueData}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.3)" />
+                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} />
+                  <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} tickFormatter={(value) => `$${value / 1000}k`} />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={4} fillOpacity={1} fill="url(#colorRevenue)" animationDuration={2000} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        {/* Area Chart - Active Users */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Growth Analysis</CardTitle>
-            <CardDescription>User acquisition and retention rates</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData}>
-                <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorValue)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        {/* Bar Chart - Sales */}
+        <motion.div variants={itemVariants}>
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle>Category Analysis</CardTitle>
+              <CardDescription>Market share across core product departments</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[350px] pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={salesData} barGap={8}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.3)" />
+                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} />
+                  <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} />
+                  <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.3)' }} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[12, 12, 4, 4]} barSize={40} animationDuration={2500} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Bar Chart - Sales by Category */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Sales by Category</CardTitle>
-            <CardDescription>Performance across different product departments</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={salesData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Pie Chart - Traffic Sources */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Traffic Sources</CardTitle>
-            <CardDescription>Where your visitors are coming from</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={trafficData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {trafficData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Legend iconType="circle" />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Orders table */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>A list of the most recent orders from your store.</CardDescription>
-          </div>
-          <Button variant="outline" size="sm">View All</Button>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[hsl(var(--border))]">
-                  <th className="pb-3 text-left text-sm font-medium text-[hsl(var(--muted-foreground))]">Order ID</th>
-                  <th className="pb-3 text-left text-sm font-medium text-[hsl(var(--muted-foreground))]">Customer</th>
-                  <th className="pb-3 text-left text-sm font-medium text-[hsl(var(--muted-foreground))]">Status</th>
-                  <th className="pb-3 text-right text-sm font-medium text-[hsl(var(--muted-foreground))]">Amount</th>
-                  <th className="pb-3 text-right text-sm font-medium text-[hsl(var(--muted-foreground))]">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map((order) => (
-                  <tr key={order.id} className="border-b border-[hsl(var(--border))] last:border-0 hover:bg-[hsl(var(--muted)/0.3)] transition-colors">
-                    <td className="py-4 font-mono text-sm">{order.id}</td>
-                    <td className="py-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar alt={order.customer} size="sm" />
-                        <div>
-                          <p className="text-sm font-medium">{order.customer}</p>
-                          <p className="text-xs text-[hsl(var(--muted-foreground))]">{order.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4">{getStatusBadge(order.status)}</td>
-                    <td className="py-4 text-right font-medium">{formatCurrency(order.amount)}</td>
-                    <td className="py-4 text-right">
-                      <Dropdown>
-                        <DropdownTrigger asChild>
-                          <button className="h-8 w-8 rounded-md hover:bg-[hsl(var(--accent))] flex items-center justify-center">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
-                        </DropdownTrigger>
-                        <DropdownContent align="end">
-                          <DropdownItem>Order Details</DropdownItem>
-                          <DropdownItem destructive>Refund</DropdownItem>
-                        </DropdownContent>
-                      </Dropdown>
-                    </td>
-                  </tr>
+      <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
+        {/* Pie Chart */}
+        <motion.div variants={itemVariants}>
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle>Traffic Mix</CardTitle>
+              <CardDescription>Acquisition source distribution</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[320px] flex flex-col justify-center">
+              <ResponsiveContainer width="100%" height="80%">
+                <PieChart>
+                  <Pie data={trafficData} cx="50%" cy="50%" innerRadius={70} outerRadius={95} paddingAngle={8} dataKey="value" cornerRadius={10} animationDuration={1500}>
+                    {trafficData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-2 mt-4 px-4">
+                {trafficData.map((item, i) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full" style={{ background: COLORS[i] }} />
+                    <span className="text-xs font-bold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{item.name}</span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Recent Transactions */}
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Latest system transactions and user actions</CardDescription>
+              </div>
+              <Button variant="ghost" className="text-sm font-bold">
+                View History <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-[hsl(var(--border)/0.5)]">
+                      <th className="pb-4 text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Order</th>
+                      <th className="pb-4 text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Customer</th>
+                      <th className="pb-4 text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Status</th>
+                      <th className="pb-4 text-right text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[hsl(var(--border)/0.3)]">
+                    {recentOrders.map((order) => (
+                      <tr key={order.id} className="group hover:bg-[hsl(var(--accent)/0.3)] transition-colors">
+                        <td className="py-4 font-mono text-sm font-bold text-[hsl(var(--primary))]">{order.id}</td>
+                        <td className="py-4">
+                          <div className="flex items-center gap-3">
+                            <Avatar alt={order.customer} size="sm" className="ring-2 ring-transparent group-hover:ring-[hsl(var(--primary)/0.2)] transition-all" />
+                            <div>
+                              <p className="text-sm font-bold">{order.customer}</p>
+                              <p className="text-xs text-[hsl(var(--muted-foreground))]">{order.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <Badge variant={order.status === 'completed' ? 'success' : order.status === 'pending' ? 'warning' : 'destructive'}>
+                            {order.status}
+                          </Badge>
+                        </td>
+                        <td className="py-4 text-right font-black text-sm">{formatCurrency(order.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </motion.div>
   )
 }

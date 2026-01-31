@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, createContext, useContext } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 const DropdownContext = createContext(undefined)
 
@@ -64,11 +64,11 @@ function DropdownTrigger({ children, className, asChild }) {
       onKeyDown={handleKeyDown}
       className={cn(
         'inline-flex items-center justify-center gap-2',
-        'rounded-[var(--radius-md)] px-4 py-2 text-sm font-medium',
+        'rounded-md px-4 py-2 text-sm font-medium',
         'border border-[hsl(var(--border))]',
         'bg-[hsl(var(--background))] text-[hsl(var(--foreground))]',
         'hover:bg-[hsl(var(--accent))]',
-        'transition-colors duration-[var(--transition-normal)]',
+        'transition-colors duration-(--transition-normal)',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]',
         className
       )}
@@ -78,7 +78,7 @@ function DropdownTrigger({ children, className, asChild }) {
       {children}
       <ChevronDown
         className={cn(
-          'h-4 w-4 transition-transform duration-[var(--transition-normal)]',
+          'h-4 w-4 transition-transform duration-(--transition-normal)',
           isOpen && 'rotate-180'
         )}
       />
@@ -95,10 +95,10 @@ function DropdownContent({ children, className, align = 'start' }) {
     <div
       role="menu"
       className={cn(
-        'absolute z-50 mt-2 min-w-[8rem] overflow-hidden',
-        'rounded-[var(--radius-md)] border border-[hsl(var(--border))]',
+        'absolute z-50 mt-2 min-w-32 overflow-hidden',
+        'rounded-md border border-[hsl(var(--border))]',
         'bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))]',
-        'shadow-[var(--shadow-lg)]',
+        'shadow-(--shadow-lg)',
         'animate-scale-in',
         align === 'start' && 'left-0',
         align === 'end' && 'right-0',
@@ -129,8 +129,8 @@ function DropdownItem({ children, className, onClick, disabled, destructive }) {
       disabled={disabled}
       className={cn(
         'relative flex w-full cursor-pointer select-none items-center gap-2',
-        'rounded-[var(--radius-sm)] px-2 py-1.5 text-sm',
-        'outline-none transition-colors duration-[var(--transition-fast)]',
+        'rounded-sm px-2 py-1.5 text-sm',
+        'outline-none transition-colors duration-(--transition-fast)',
         'hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]',
         'focus:bg-[hsl(var(--accent))] focus:text-[hsl(var(--accent-foreground))]',
         disabled && 'pointer-events-none opacity-50',

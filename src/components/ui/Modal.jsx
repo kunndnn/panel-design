@@ -1,6 +1,6 @@
 import { useEffect, useRef, createContext, useContext } from 'react'
 import { X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 const ModalContext = createContext(undefined)
 
@@ -95,9 +95,9 @@ function ModalContent({ children, className }) {
       aria-modal="true"
       className={cn(
         'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2',
-        'rounded-[var(--radius-lg)] border border-[hsl(var(--border))]',
+        'rounded-lg border border-[hsl(var(--border))]',
         'bg-[hsl(var(--background))] p-6',
-        'shadow-[var(--shadow-xl)]',
+        'shadow-(--shadow-xl)',
         'animate-scale-in',
         className
       )}
@@ -162,7 +162,7 @@ function ModalClose({ children, className }) {
       type="button"
       onClick={() => onOpenChange(false)}
       className={cn(
-        'absolute right-4 top-4 rounded-[var(--radius-sm)] p-1',
+        'absolute right-4 top-4 rounded-sm p-1',
         'opacity-70 transition-opacity hover:opacity-100',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]',
         className
