@@ -24,6 +24,13 @@ export function ThemeProvider({ children }) {
     const root = document.documentElement
     root.setAttribute('data-theme', theme)
     localStorage.setItem(THEME_KEY, theme)
+
+    // Smooth transitions only during theme change
+    document.body.classList.add('theme-transitioning')
+    const timer = setTimeout(() => {
+      document.body.classList.remove('theme-transitioning')
+    }, 400) // matches duration-base + buffer
+    return () => clearTimeout(timer)
   }, [theme])
 
   // Listen for system preference changes

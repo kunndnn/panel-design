@@ -1,5 +1,5 @@
 import { useState, createContext, useContext } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useResolvedPath, useMatch } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -83,7 +83,7 @@ export function Sidebar() {
         <div
           className={cn(
             'flex h-(--navbar-height) items-center border-b border-[hsl(var(--border)/0.5)]',
-            isCollapsed ? 'justify-center px-2' : 'px-6'
+            isCollapsed ? 'justify-center px-2' : 'px-4'
           )}
         >
           <div className="flex items-center gap-3">
@@ -106,23 +106,28 @@ export function Sidebar() {
         <nav className="flex-1 overflow-y-auto px-4 py-6">
           <ul className="space-y-2">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path
               const Icon = item.icon
+              const resolvedPath = useResolvedPath(item.path)
+              const match = useMatch({ path: resolvedPath.pathname, end: item.path === '/' })
+              const isActive = !!match
 
-              const linkContent = (
+              const link = (
                 <NavLink
                   to={item.path}
                   onClick={closeMobile}
                   className={cn(
-                    'group relative flex items-center gap-3 rounded-md px-3 py-2',
-                    'text-sm font-medium transition-colors duration-200',
+                    'group relative flex w-full items-center gap-3 rounded-md px-3 py-2',
+                    'text-sm font-medium transition-all duration-200',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] dark:bg-[hsl(var(--primary)/0.15)] shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.1)]'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                     isCollapsed && 'justify-center px-0'
                   )}
                 >
-                  <Icon className={cn('h-4.5 w-4.5 shrink-0 transition-transform duration-200 group-active:scale-95')} />
+                  <Icon className={cn(
+                    'h-5 w-5 shrink-0 transition-transform duration-200 group-active:scale-95',
+                    isActive ? 'text-[hsl(var(--primary))]' : 'text-muted-foreground group-hover:text-foreground'
+                  )} />
 
                   <AnimatePresence initial={false}>
                     {!isCollapsed && (
@@ -133,20 +138,24 @@ export function Sidebar() {
                         transition={{
                           duration: 0.2,
                           ease: 'easeOut',
-                          delay: 0.05 // Tiny stagger
+                          delay: 0.05
                         }}
-                        className="truncate"
+                        className="flex-1 truncate"
                       >
                         {item.label}
                       </motion.span>
                     )}
                   </AnimatePresence>
 
-                  {isActive && !isCollapsed && (
+                  {!isCollapsed && (
                     <motion.div
-                      layoutId="active-indicator"
-                      className="absolute left-0 w-1 h-4 bg-primary rounded-r-full"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      initial={{ opacity: 0, scaleY: 0.5 }}
+                      animate={{
+                        opacity: isActive ? 1 : 0,
+                        scaleY: isActive ? 1 : 0.5
+                      }}
+                      className="absolute left-0 w-1 h-5 bg-[hsl(var(--primary))] rounded-r-full shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
                     />
                   )}
                 </NavLink>
@@ -155,11 +164,11 @@ export function Sidebar() {
               return (
                 <li key={item.path}>
                   {isCollapsed ? (
-                    <Tooltip content={item.label} side="right">
-                      {linkContent}
+                    <Tooltip content={item.label} side="right" className="w-full">
+                      {link}
                     </Tooltip>
                   ) : (
-                    linkContent
+                      link
                   )}
                 </li>
               )

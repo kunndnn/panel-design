@@ -52,10 +52,10 @@ export const buttonVariants = cva(
 )
 
 export const Button = forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = 'button'
-
   return (
-    <Comp
+    <motion.button
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
       ref={ref}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}

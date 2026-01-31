@@ -1,14 +1,9 @@
 import { useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
 import {
   Search,
-  Filter,
   Plus,
   MoreHorizontal,
   Mail,
-  User as UserIcon,
-  Phone,
-  Calendar,
   Trash2,
   Edit,
 } from 'lucide-react'
@@ -19,9 +14,6 @@ import {
   Badge,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Avatar,
   Dropdown,
   DropdownTrigger,

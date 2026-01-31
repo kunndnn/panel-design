@@ -101,9 +101,9 @@ function DropdownContent({ children, className, align = 'start' }) {
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
             'absolute z-50 mt-2 min-w-32 overflow-hidden',
-            'rounded-md border border-border',
+            'rounded-xl border border-border/40',
             'bg-popover text-popover-foreground',
-            'shadow-lg',
+            'shadow-2xl shadow-black/10 ring-1 ring-white/20 dark:ring-white/10',
             align === 'start' && 'left-0',
             align === 'end' && 'right-0',
             align === 'center' && 'left-1/2 -translate-x-1/2',
@@ -137,8 +137,8 @@ function DropdownItem({ children, className, onClick, disabled, destructive }) {
         'relative flex w-full cursor-pointer select-none items-center gap-2',
         'rounded-sm px-2 py-1.5 text-sm',
         'outline-none transition-colors duration-(--transition-fast)',
-        'hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]',
-        'focus:bg-[hsl(var(--accent))] focus:text-[hsl(var(--accent-foreground))]',
+        'hover:bg-accent/50 hover:text-accent-foreground',
+        'focus:bg-accent/50 focus:text-accent-foreground',
         disabled && 'pointer-events-none opacity-50',
         destructive && 'text-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.1)]',
         className
@@ -152,7 +152,7 @@ function DropdownItem({ children, className, onClick, disabled, destructive }) {
 function DropdownSeparator({ className }) {
   return (
     <div
-      className={cn('my-1 h-px bg-[hsl(var(--border))]', className)}
+      className={cn('my-1 h-px bg-border/40', className)}
       role="separator"
     />
   )

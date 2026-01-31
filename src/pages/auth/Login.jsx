@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff, Github, Chrome } from 'lucide-react'
-import { Button, Input, Label, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui'
+import { Button, Input, Label, Card, CardContent, CardFooter } from '../../components/ui'
 import { ThemeToggle } from '../../components/ThemeToggle'
 
 export function Login() {

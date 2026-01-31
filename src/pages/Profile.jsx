@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { User, Mail, Phone, MapPin, Globe, Camera, Shield, Bell, Key, Verified, Settings, CreditCard, Apple } from 'lucide-react'
+import { User, Phone, Camera, Shield, Bell, Key, Verified, Settings, CreditCard, Mail, Globe } from 'lucide-react'
 import { Button, Input, Label, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Avatar, Badge } from '../components/ui'
 import { cn } from '../lib/utils'
 
@@ -11,7 +10,7 @@ export function Profile() {
     name: 'John Doe',
     email: 'john.doe@example.com',
     role: 'Senior Product Designer',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
+    avatar: 'https://i.pravatar.cc/150',
     location: 'Silicon Valley, CA',
     phone: '+1 (555) 942-0000',
     website: 'www.johndoe.design',

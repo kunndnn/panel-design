@@ -1,19 +1,13 @@
 import { motion } from 'framer-motion'
 import {
-  TrendingUp,
-  TrendingDown,
   Users,
   DollarSign,
   ShoppingCart,
   Activity,
-  ArrowUpRight,
-  MoreHorizontal,
   Plus,
   ArrowRight,
 } from 'lucide-react'
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   BarChart,
@@ -26,9 +20,8 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
-import { cn, formatNumber, formatCurrency } from '../lib/utils'
+import { formatNumber, formatCurrency } from '../lib/utils'
 import {
   Card,
   CardContent,
@@ -38,10 +31,6 @@ import {
   Button,
   Badge,
   Avatar,
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
-  DropdownItem,
 } from '../components/ui'
 
 // Mock Data for Charts
@@ -150,31 +139,28 @@ function StatCard({ title, value, change, trend, icon: Icon, format, color }) {
 
   return (
     <motion.div variants={itemVariants}>
-      <Card className="surface-hover">
+      <Card className="surface surface-hover group overflow-hidden border-border/50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-foreground">
-              <Icon className="h-5 w-5" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted/50 text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <Icon className="h-5.5 w-5.5" />
             </div>
-            <div className={cn(
-              'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold',
-              isPositive
-                ? 'bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]'
-                : 'bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]'
-            )}>
-              {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-              {isPositive ? '+' : ''}{change}%
-            </div>
+            <Badge
+              variant={isPositive ? "success" : "destructive"}
+              className="px-2 py-0.5 text-[11px] font-bold"
+            >
+              {isPositive ? "+" : ""}{change}%
+            </Badge>
           </div>
-          <div className="mt-4">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
-            <h3 className="text-2xl font-semibold tracking-tight mt-1">{formattedValue}</h3>
+          <div className="mt-5">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{title}</p>
+            <h3 className="text-3xl font-bold tracking-tight mt-1 group-hover:text-primary transition-colors">{formattedValue}</h3>
           </div>
-          <div className="mt-4 flex items-center text-[10px] text-muted-foreground font-semibold uppercase tracking-widest">
-            <span className={cn('mr-1.5', isPositive ? 'text-success' : 'text-destructive')}>
-              {isPositive ? '↑' : '↓'} {change}%
+          <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+            <span>Month-to-date</span>
+            <span className={isPositive ? "text-success" : "text-destructive"}>
+              {isPositive ? "↑" : "↓"} {change}%
             </span>
-            vs last month
           </div>
         </CardContent>
       </Card>

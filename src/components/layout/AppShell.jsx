@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 import { Sidebar, SidebarProvider, useSidebar } from './Sidebar'
@@ -9,7 +9,7 @@ function AppShellContent({ children }) {
   const location = useLocation()
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
+    <div className="relative min-h-screen bg-[hsl(var(--background)/0.3)]">
 
       <Sidebar />
       <Navbar />
@@ -23,20 +23,14 @@ function AppShellContent({ children }) {
         )}
       >
         <div className="mx-auto w-full max-w-[1600px] p-4 lg:p-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{
-                duration: 0.24,
-                ease: [0.16, 1, 0.3, 1] // easeOutExpo equivalent
-              }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {children}
+          </motion.div>
         </div>
       </main>
     </div>

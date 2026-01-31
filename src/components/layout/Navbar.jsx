@@ -58,12 +58,12 @@ export function Navbar() {
               </Button>
             </DropdownTrigger>
             <DropdownContent align="end" className="w-80 p-0">
-              <div className="p-4 border-b border-[hsl(var(--border))]">
+              <div className="p-4 border-b border-border/40">
                 <h3 className="font-semibold">Notifications</h3>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="p-4 flex gap-3 hover:bg-[hsl(var(--muted)/0.5)] transition-colors cursor-pointer border-b border-[hsl(var(--border)/0.5)] last:border-0">
+                  <div key={i} className="p-4 flex gap-3 hover:bg-muted/40 transition-colors cursor-pointer border-b border-border/20 last:border-0">
                     <div className="h-10 w-10 rounded-full bg-[hsl(var(--primary)/0.1)] flex items-center justify-center shrink-0">
                       <Bell className="h-5 w-5 text-[hsl(var(--primary))]" />
                     </div>
@@ -84,7 +84,7 @@ export function Navbar() {
             <DropdownTrigger asChild>
               <button className="flex items-center gap-2 p-1 rounded-md hover:bg-muted transition-colors group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background">
                 <Avatar
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+                  src="https://i.pravatar.cc/150"
                   alt="User"
                   className="h-8 w-8 grayscale-[0.5] group-hover:grayscale-0 transition-all"
                 />
