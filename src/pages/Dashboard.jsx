@@ -75,7 +75,7 @@ const trafficData = [
   { name: 'Referral', value: 200 },
 ]
 
-const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+const COLORS = ['#0f172a', '#3f3f46', '#71717a', '#a1a1aa', '#d4d4d8']
 
 const stats = [
   {
@@ -150,17 +150,11 @@ function StatCard({ title, value, change, trend, icon: Icon, format, color }) {
 
   return (
     <motion.div variants={itemVariants}>
-      <Card className="group relative overflow-hidden">
-        <div className={cn(
-          "absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-5 transition-transform duration-500 group-hover:scale-125 bg-current",
-          `text-[hsl(var(--primary))]`
-        )} />
+      <Card className="surface-hover">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <div className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.7)] shadow-lg glow-primary"
-            )}>
-              <Icon className="h-6 w-6 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-foreground">
+              <Icon className="h-5 w-5" />
             </div>
             <div className={cn(
               'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold',
@@ -173,11 +167,14 @@ function StatCard({ title, value, change, trend, icon: Icon, format, color }) {
             </div>
           </div>
           <div className="mt-4">
-            <p className="text-sm font-medium text-[hsl(var(--muted-foreground))]">{title}</p>
-            <h3 className="text-3xl font-bold tracking-tight mt-1">{formattedValue}</h3>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
+            <h3 className="text-2xl font-semibold tracking-tight mt-1">{formattedValue}</h3>
           </div>
-          <div className="mt-4 flex items-center text-xs text-[hsl(var(--muted-foreground))] font-medium">
-            <span className="text-[hsl(var(--primary))] font-bold mr-1">Snapshot:</span> last 30 days
+          <div className="mt-4 flex items-center text-[10px] text-muted-foreground font-semibold uppercase tracking-widest">
+            <span className={cn('mr-1.5', isPositive ? 'text-success' : 'text-destructive')}>
+              {isPositive ? '↑' : '↓'} {change}%
+            </span>
+            vs last month
           </div>
         </CardContent>
       </Card>
@@ -188,15 +185,15 @@ function StatCard({ title, value, change, trend, icon: Icon, format, color }) {
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-xl border border-[hsl(var(--border)/0.5)] bg-[hsl(var(--popover)/0.8)] backdrop-blur-md p-4 shadow-xl">
-        <p className="text-sm font-bold border-b border-[hsl(var(--border)/0.5)] pb-2 mb-2">{label}</p>
+      <div className="rounded-lg border border-border bg-popover/90 backdrop-blur-md p-3 shadow-lg">
+        <p className="text-xs font-bold text-muted-foreground mb-2 px-1">{label}</p>
         {payload.map((item, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 py-1">
-            <span className="flex items-center gap-2 text-xs font-semibold">
-              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color || item.fill }} />
+          <div key={index} className="flex items-center justify-between gap-6 py-1 px-1">
+            <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-foreground">
+              <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: item.color || item.fill }} />
               {item.name}
             </span>
-            <span className="text-sm font-bold">{item.value}</span>
+            <span className="text-xs font-bold">{item.value}</span>
           </div>
         ))}
       </div>
@@ -214,19 +211,17 @@ export function Dashboard() {
       className="space-y-8"
     >
       {/* Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tight bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.6)] bg-clip-text text-transparent">
-            Overview Dashboard
-          </h1>
-          <p className="text-[hsl(var(--muted-foreground))] font-medium mt-1">
-            Welcome back, <span className="text-[hsl(var(--foreground))] font-bold">John Doe</span>. Here's what's happening.
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Performance metrics and analytical insights for <span className="text-foreground font-medium">Q1 2026</span>.
           </p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="rounded-xl">Export Report</Button>
-          <Button className="rounded-xl shadow-lg glow-primary">
-            <Plus className="h-4 w-4 mr-2" /> Action
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">Download Report</Button>
+          <Button size="sm">
+            <Plus className="h-3.5 w-3.5 mr-1.5" /> New Action
           </Button>
         </div>
       </div>
@@ -254,15 +249,15 @@ export function Dashboard() {
                 <AreaChart data={revenueData}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.3)" />
-                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} tickFormatter={(value) => `$${value / 1000}k`} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
+                  <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 500 }} dy={10} />
+                  <YAxis fontSize={11} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 500 }} tickFormatter={(value) => `$${value / 1000}k`} dx={-10} />
                   <RechartsTooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={4} fillOpacity={1} fill="url(#colorRevenue)" animationDuration={2000} />
+                  <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevenue)" />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -279,11 +274,11 @@ export function Dashboard() {
             <CardContent className="h-[350px] pt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={salesData} barGap={8}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.3)" />
-                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 600 }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
+                  <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 500 }} dy={10} />
+                  <YAxis fontSize={11} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" tick={{ fontWeight: 500 }} dx={-10} />
                   <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.3)' }} />
-                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[12, 12, 4, 4]} barSize={40} animationDuration={2500} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={32} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -325,45 +320,45 @@ export function Dashboard() {
         {/* Recent Transactions */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div>
                 <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Latest system transactions and user actions</CardDescription>
+                <CardDescription>Latest system transactions</CardDescription>
               </div>
-              <Button variant="ghost" className="text-sm font-bold">
-                View History <ArrowRight className="h-4 w-4 ml-1" />
+              <Button variant="ghost" size="sm" className="text-xs font-semibold">
+                View All <ArrowRight className="h-3 w-3 ml-1" />
               </Button>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="table-minimal">
                   <thead>
-                    <tr className="border-b border-[hsl(var(--border)/0.5)]">
-                      <th className="pb-4 text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Order</th>
-                      <th className="pb-4 text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Customer</th>
-                      <th className="pb-4 text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Status</th>
-                      <th className="pb-4 text-right text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Amount</th>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Status</th>
+                      <th className="text-right">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[hsl(var(--border)/0.3)]">
+                  <tbody>
                     {recentOrders.map((order) => (
-                      <tr key={order.id} className="group hover:bg-[hsl(var(--accent)/0.3)] transition-colors">
-                        <td className="py-4 font-mono text-sm font-bold text-[hsl(var(--primary))]">{order.id}</td>
-                        <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar alt={order.customer} size="sm" className="ring-2 ring-transparent group-hover:ring-[hsl(var(--primary)/0.2)] transition-all" />
-                            <div>
-                              <p className="text-sm font-bold">{order.customer}</p>
-                              <p className="text-xs text-[hsl(var(--muted-foreground))]">{order.email}</p>
+                      <tr key={order.id}>
+                        <td className="font-medium text-xs text-muted-foreground">{order.id}</td>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            <Avatar alt={order.customer} size="xs" />
+                            <div className="flex flex-col">
+                              <span className="font-medium text-sm leading-tight">{order.customer}</span>
+                              <span className="text-[10px] text-muted-foreground">{order.email}</span>
                             </div>
                           </div>
                         </td>
-                        <td className="py-4">
-                          <Badge variant={order.status === 'completed' ? 'success' : order.status === 'pending' ? 'warning' : 'destructive'}>
+                        <td>
+                          <Badge variant={order.status === 'completed' ? 'success' : order.status === 'pending' ? 'warning' : 'destructive'} size="sm">
                             {order.status}
                           </Badge>
                         </td>
-                        <td className="py-4 text-right font-black text-sm">{formatCurrency(order.amount)}</td>
+                        <td className="text-right font-medium">{formatCurrency(order.amount)}</td>
                       </tr>
                     ))}
                   </tbody>

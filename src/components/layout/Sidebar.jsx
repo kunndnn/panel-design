@@ -70,12 +70,11 @@ export function Sidebar() {
       <motion.aside
         animate={{
           width: isCollapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)',
-          x: isMobileOpen || !isCollapsed ? 0 : (window.innerWidth < 1024 ? -300 : 0)
         }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           'fixed left-0 top-0 z-50 flex h-screen flex-col',
-          'border-r border-[hsl(var(--border)/0.5)]',
-          'glass',
+          'border-r border-border bg-background',
           'transition-transform duration-(--transition-slow) lg:translate-x-0',
           !isMobileOpen && '-translate-x-full lg:translate-x-0'
         )}
@@ -88,8 +87,8 @@ export function Sidebar() {
           )}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.8)] shadow-lg glow-primary">
-              <span className="text-xl font-bold text-white">A</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+              <span className="text-lg font-bold">A</span>
             </div>
             {!isCollapsed && (
               <motion.span
@@ -115,30 +114,39 @@ export function Sidebar() {
                   to={item.path}
                   onClick={closeMobile}
                   className={cn(
-                    'group relative flex items-center gap-3 rounded-xl px-3 py-3',
-                    'text-sm font-medium transition-all duration-300',
+                    'group relative flex items-center gap-3 rounded-md px-3 py-2',
+                    'text-sm font-medium transition-colors duration-200',
                     isActive
-                      ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-lg glow-primary'
-                      : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--primary))]',
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                     isCollapsed && 'justify-center px-0'
                   )}
                 >
-                  <Icon className={cn('h-5 w-5 shrink-0 transition-transform duration-300 group-hover:scale-110')} />
+                  <Icon className={cn('h-4.5 w-4.5 shrink-0 transition-transform duration-200 group-active:scale-95')} />
 
-                  {!isCollapsed && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="truncate"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
+                  <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -4 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -4 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: 'easeOut',
+                          delay: 0.05 // Tiny stagger
+                        }}
+                        className="truncate"
+                      >
+                        {item.label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
 
                   {isActive && !isCollapsed && (
                     <motion.div
-                      layoutId="active-pill"
-                      className="absolute right-2 h-1.5 w-1.5 rounded-full bg-white shadow-sm"
+                      layoutId="active-indicator"
+                      className="absolute left-0 w-1 h-4 bg-primary rounded-r-full"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                     />
                   )}
                 </NavLink>
@@ -160,13 +168,13 @@ export function Sidebar() {
         </nav>
 
         {/* Footer Toggle */}
-        <div className="border-t border-[hsl(var(--border)/0.5)] p-4">
+        <div className="border-t border-border p-4">
           <button
             onClick={toggle}
             className={cn(
-              'flex w-full items-center gap-3 rounded-xl px-3 py-3',
-              'text-sm font-medium text-[hsl(var(--muted-foreground))]',
-              'transition-all duration-300 hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--primary))]',
+              'flex w-full items-center gap-3 rounded-md px-3 py-2',
+              'text-sm font-medium text-muted-foreground',
+              'transition-colors hover:bg-muted hover:text-foreground',
               isCollapsed && 'justify-center px-0'
             )}
           >
@@ -191,9 +199,9 @@ export function MobileMenuButton() {
     <button
       onClick={toggleMobile}
       className={cn(
-        'inline-flex h-10 w-10 items-center justify-center rounded-xl',
-        'bg-[hsl(var(--card)/0.5)] border border-[hsl(var(--border)/0.5)]',
-        'text-[hsl(var(--foreground))] shadow-sm transition-all hover:bg-[hsl(var(--accent))]',
+        'inline-flex h-9 w-9 items-center justify-center rounded-md',
+        'bg-background border border-border',
+        'text-foreground shadow-sm transition-colors hover:bg-muted',
         'lg:hidden'
       )}
       aria-label="Toggle menu"

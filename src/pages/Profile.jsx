@@ -29,25 +29,23 @@ export function Profile() {
 
   return (
     <div className="space-y-8 animate-in max-w-6xl mx-auto">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tight bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.6)] bg-clip-text text-transparent">
-            Profile Settings
-          </h1>
-          <p className="text-[hsl(var(--muted-foreground))] font-medium mt-1">
-            Update your account details and visual preferences.
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage your personal information and preferences.
           </p>
         </div>
-        <div className="flex items-center gap-2 p-1 bg-[hsl(var(--muted)/0.5)] rounded-xl border border-[hsl(var(--border)/0.5)]">
+        <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-lg border border-border">
           {sections.map((s) => (
             <button
               key={s.id}
               onClick={() => setActiveSegment(s.id)}
               className={cn(
-                'px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-2',
+                'px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all flex items-center gap-2',
                 activeSegment === s.id
-                  ? 'bg-[hsl(var(--card))] text-[hsl(var(--primary))] shadow-sm'
-                  : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
+                  ? 'bg-card text-foreground shadow-sm border border-border'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <s.icon className="h-3.5 w-3.5" />
@@ -60,26 +58,26 @@ export function Profile() {
       <div className="grid gap-8 lg:grid-cols-12">
         {/* Left Column: Sidebar Profile */}
         <div className="lg:col-span-4 space-y-8">
-          <Card className="overflow-hidden border-none shadow-2xl relative">
-            <div className="h-32 bg-linear-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.4)]" />
-            <CardContent className="pt-0 flex flex-col items-center -mt-16">
+          <Card className="overflow-hidden border border-border bg-card">
+            <div className="h-24 bg-muted" />
+            <CardContent className="pt-0 flex flex-col items-center -mt-12">
               <div className="relative group">
                 <Avatar
                   src={user.avatar}
                   alt={user.name}
                   size="xl"
-                  className="h-32 w-32 border-8 border-[hsl(var(--background))] shadow-xl"
+                  className="h-24 w-24 border-4 border-background shadow-md"
                 />
-                <button className="absolute bottom-2 right-2 p-2.5 rounded-xl bg-[hsl(var(--primary))] text-white shadow-lg shadow-[hsl(var(--primary)/0.3)] transition-transform hover:scale-110 active:scale-95">
-                  <Camera className="h-4 w-4" />
+                <button className="absolute bottom-1 right-1 p-2 rounded-md bg-primary text-primary-foreground shadow-sm hover:scale-105 active:scale-95 transition-transform">
+                  <Camera className="h-3.5 w-3.5" />
                 </button>
               </div>
               <div className="mt-4 text-center">
-                <div className="flex items-center justify-center gap-2">
-                  <h3 className="text-2xl font-black">{user.name}</h3>
-                  <Verified className="h-5 w-5 text-[hsl(var(--primary))]" />
+                <div className="flex items-center justify-center gap-1.5">
+                  <h3 className="text-xl font-semibold italic">{user.name}</h3>
+                  <Verified className="h-4 w-4 text-primary" />
                 </div>
-                <p className="text-sm font-bold text-[hsl(var(--muted-foreground))] uppercase tracking-widest mt-1">{user.role}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{user.role}</p>
               </div>
 
               <div className="w-full mt-8 space-y-4 border-t border-[hsl(var(--border)/0.5)] pt-6">
@@ -93,18 +91,18 @@ export function Profile() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="bg-[hsl(var(--muted)/0.2)] border-none mt-4">
-              <Button className="w-full rounded-xl py-6" variant="outline">Preview Public Profile</Button>
+            <CardFooter className="bg-muted/30 border-t border-border mt-4">
+              <Button className="w-full" variant="outline" size="sm">Public Profile</Button>
             </CardFooter>
           </Card>
 
-          <Card className="border-[hsl(var(--border)/0.5)] bg-[hsl(var(--primary)/0.03)] border-dashed">
+          <Card className="border border-border bg-muted/20 border-dashed">
             <CardContent className="p-6">
-              <h4 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 mb-4">
-                <Verified className="h-4 w-4 text-[hsl(var(--primary))]" />
+              <h4 className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-3 text-muted-foreground">
+                <Verified className="h-3.5 w-3.5 text-primary" />
                 Verification Status
               </h4>
-              <p className="text-sm text-[hsl(var(--muted-foreground))] font-medium leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Your account is currently verified. This gives you access to advanced features and analytics tools.
               </p>
             </CardContent>
@@ -113,14 +111,14 @@ export function Profile() {
 
         {/* Right Column: Main Content */}
         <div className="lg:col-span-8 space-y-8">
-          <Card className="border-[hsl(var(--border)/0.5)] shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between">
+          <Card className="border border-border">
+            <CardHeader className="flex flex-row items-center justify-between pb-6 border-b border-border">
               <div>
                 <CardTitle>Account Details</CardTitle>
-                <CardDescription>Manage your public identity and contact paths.</CardDescription>
+                <CardDescription>Manage your identity and contact information.</CardDescription>
               </div>
-              <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? 'outline' : 'default'} className="rounded-xl px-8">
-                {isEditing ? 'Discard Changes' : 'Edit Information'}
+              <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? 'outline' : 'default'} size="sm">
+                {isEditing ? 'Discard' : 'Edit Profile'}
               </Button>
             </CardHeader>
             <CardContent className="space-y-8">
@@ -159,9 +157,9 @@ export function Profile() {
               </div>
             </CardContent>
             {isEditing && (
-              <CardFooter className="flex justify-end gap-3 pt-6 border-t border-[hsl(var(--border)/0.5)]">
-                <Button variant="ghost" onClick={() => setIsEditing(false)}>Cancel</Button>
-                <Button className="px-8 shadow-lg glow-primary" onClick={() => setIsEditing(false)}>Save Profile</Button>
+              <CardFooter className="flex justify-end gap-2 pt-6 border-t border-border">
+                <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)}>Cancel</Button>
+                <Button size="sm" onClick={() => setIsEditing(false)}>Save Changes</Button>
               </CardFooter>
             )}
           </Card>

@@ -151,41 +151,39 @@ export function TablePage() {
 
   return (
     <div className="space-y-8 animate-in">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tight bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary)/0.6)] bg-clip-text text-transparent">
-            User Directory
-          </h1>
-          <p className="text-[hsl(var(--muted-foreground))] font-medium mt-1">Manage and monitor all platform users in one place.</p>
+          <h1 className="text-2xl font-bold tracking-tight">User Directory</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage platform members and access permissions.</p>
         </div>
-        <Button className="rounded-xl shadow-lg glow-primary">
-          <Plus className="h-4 w-4 mr-2" /> Add New User
+        <Button size="sm">
+          <Plus className="h-3.5 w-3.5 mr-1.5" /> Invite Member
         </Button>
       </div>
 
-      <Card className="border-[hsl(var(--border)/0.5)] shadow-xl overflow-visible">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between pb-6 border-b border-[hsl(var(--border)/0.5)] mb-6">
-            <div className="relative group max-w-sm w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))] transition-colors group-focus-within:text-[hsl(var(--primary))]" />
+      <Card className="border-none shadow-none bg-transparent">
+        <CardContent className="p-0">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between pb-6">
+            <div className="relative group max-w-xs w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-foreground" />
               <Input
-                placeholder="Search users by name or email..."
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full"
+                className="pl-9 w-full h-9 bg-background focus:bg-background"
               />
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 p-1 bg-[hsl(var(--muted)/0.5)] rounded-xl border border-[hsl(var(--border)/0.5)]">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-lg border border-border">
                 {['all', 'active', 'pending', 'inactive'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setStatusFilter(status)}
                     className={cn(
-                      'px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all',
+                      'px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all',
                       statusFilter === status
-                        ? 'bg-[hsl(var(--card))] text-[hsl(var(--primary))] shadow-sm'
-                        : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
+                        ? 'bg-card text-foreground shadow-sm border border-border'
+                        : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
                     {status}

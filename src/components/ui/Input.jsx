@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../../lib/utils'
 
 export const Input = forwardRef(({ className, type, icon: Icon, error, ...props }, ref) => {
@@ -10,22 +11,30 @@ export const Input = forwardRef(({ className, type, icon: Icon, error, ...props 
       <input
         type={type}
         className={cn(
-          'flex h-12 w-full rounded-xl border border-[hsl(var(--border)/0.8)] bg-[hsl(var(--background))] px-4 py-2 text-sm ring-offset-[hsl(var(--background))] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[hsl(var(--muted-foreground))] transition-all',
-          'hover:border-[hsl(var(--primary)/0.3)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary)/0.3)] focus-visible:border-[hsl(var(--primary)/0.5)]',
+          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground transition-all',
+          'hover:border-accent-foreground/20',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          Icon && 'pl-11',
-          error && 'border-[hsl(var(--destructive))] focus-visible:ring-[hsl(var(--destructive)/0.3)]',
+          Icon && 'pl-10',
+          error && 'border-destructive focus-visible:ring-destructive',
           className
         )}
         ref={ref}
         {...props}
       />
-      {error && (
-        <p className="mt-1.5 text-xs font-semibold text-[hsl(var(--destructive))] animate-in">
-          {error}
-        </p>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className="mt-1.5 text-xs font-semibold text-destructive"
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   )
 })
@@ -36,7 +45,7 @@ export function Label({ className, ...props }) {
   return (
     <label
       className={cn(
-        'text-xs font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-2 block',
+        'text-xs font-medium text-muted-foreground mb-1.5 block',
         className
       )}
       {...props}

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, createContext, useContext } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
@@ -89,25 +90,30 @@ function DropdownTrigger({ children, className, asChild }) {
 function DropdownContent({ children, className, align = 'start' }) {
   const { isOpen } = useContext(DropdownContext)
 
-  if (!isOpen) return null
-
   return (
-    <div
-      role="menu"
-      className={cn(
-        'absolute z-50 mt-2 min-w-32 overflow-hidden',
-        'rounded-md border border-[hsl(var(--border))]',
-        'bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))]',
-        'shadow-(--shadow-lg)',
-        'animate-scale-in',
-        align === 'start' && 'left-0',
-        align === 'end' && 'right-0',
-        align === 'center' && 'left-1/2 -translate-x-1/2',
-        className
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          role="menu"
+          initial={{ opacity: 0, y: 8, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className={cn(
+            'absolute z-50 mt-2 min-w-32 overflow-hidden',
+            'rounded-md border border-border',
+            'bg-popover text-popover-foreground',
+            'shadow-lg',
+            align === 'start' && 'left-0',
+            align === 'end' && 'right-0',
+            align === 'center' && 'left-1/2 -translate-x-1/2',
+            className
+          )}
+        >
+          <div className="p-1">{children}</div>
+        </motion.div>
       )}
-    >
-      <div className="p-1">{children}</div>
-    </div>
+    </AnimatePresence>
   )
 }
 

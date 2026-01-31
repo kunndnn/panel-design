@@ -23,8 +23,8 @@ export function Navbar() {
     <header
       className={cn(
         'fixed top-0 right-0 z-30 h-(--navbar-height)',
-        'glass-nav transition-all duration-(--transition-slow) ease-in-out',
-        'left-0 lg:left-0',
+        'bg-background/80 backdrop-blur-md border-b border-border transition-all duration-(--transition-slow) ease-in-out',
+        'left-0',
         isCollapsed
           ? 'lg:left-0'
           : 'lg:left-0'
@@ -32,17 +32,17 @@ export function Navbar() {
     >
       <div className={cn(
         'flex h-full items-center justify-between px-4 lg:px-8 transition-all duration-(--transition-slow)',
-        isCollapsed ? 'lg:pl-[calc(var(--sidebar-collapsed-width)+2rem)]' : 'lg:pl-[calc(var(--sidebar-width)+2rem)]'
+        isCollapsed ? 'lg:pl-[calc(var(--sidebar-collapsed-width)+1.5rem)]' : 'lg:pl-[calc(var(--sidebar-width)+1.5rem)]'
       )}>
         <div className="flex items-center gap-4">
           <MobileMenuButton />
 
           <div className="hidden md:flex relative group max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))] transition-colors group-focus-within:text-[hsl(var(--primary))]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-foreground" />
             <Input
               type="search"
-              placeholder="Search anything..."
-              className="pl-10 w-[300px] lg:w-[400px] border-none bg-[hsl(var(--muted)/0.5)] rounded-xl focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary)/0.3)] transition-all"
+              placeholder="Search..."
+              className="pl-9 w-[240px] lg:w-[320px] bg-muted/50 border-transparent hover:border-border focus:bg-background transition-all"
             />
           </div>
         </div>
@@ -52,9 +52,9 @@ export function Navbar() {
 
           <Dropdown>
             <DropdownTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-[hsl(var(--accent))]">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[hsl(var(--primary))] ring-2 ring-[hsl(var(--background))]" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-md">
+                <Bell className="h-4.5 w-4.5" />
+                <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-background" />
               </Button>
             </DropdownTrigger>
             <DropdownContent align="end" className="w-80 p-0">
@@ -82,15 +82,15 @@ export function Navbar() {
 
           <Dropdown>
             <DropdownTrigger asChild>
-              <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[hsl(var(--accent))] transition-all group">
+              <button className="flex items-center gap-2 p-1 rounded-md hover:bg-muted transition-colors group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background">
                 <Avatar
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
                   alt="User"
-                  className="h-9 w-9 border-2 border-[hsl(var(--primary)/0.2)] group-hover:border-[hsl(var(--primary)/0.5)] transition-all"
+                  className="h-8 w-8 grayscale-[0.5] group-hover:grayscale-0 transition-all"
                 />
-                <div className="hidden sm:block text-left mr-2">
-                  <p className="text-sm font-semibold leading-none">John Doe</p>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">Admin</p>
+                <div className="hidden sm:block text-left mr-1">
+                  <p className="text-sm font-medium leading-none">John Doe</p>
+                  <p className="text-[10px] uppercase font-semibold text-muted-foreground mt-1 tracking-wider">Admin</p>
                 </div>
               </button>
             </DropdownTrigger>

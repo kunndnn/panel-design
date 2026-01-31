@@ -6,7 +6,7 @@ import { Button } from './Button'
 
 function Table({ children, className }) {
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-[hsl(var(--border)/0.5)] glass shadow-xl">
+    <div className="relative w-full overflow-hidden rounded-lg border border-border bg-card">
       <div className="overflow-auto">
         <table className={cn('w-full caption-bottom text-sm', className)}>
           {children}
@@ -18,7 +18,7 @@ function Table({ children, className }) {
 
 function TableHeader({ children, className }) {
   return (
-    <thead className={cn('bg-[hsl(var(--muted)/0.3)] backdrop-blur-sm', className)}>
+    <thead className={cn('bg-muted/30', className)}>
       {children}
     </thead>
   )
@@ -31,14 +31,17 @@ function TableBody({ children, className }) {
 function TableRow({ children, className, onClick, selected }) {
   return (
     <motion.tr
+      layout
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: 'easeInOut' }}
       onClick={onClick}
       className={cn(
-        'border-b border-[hsl(var(--border)/0.3)] transition-all',
-        'hover:bg-[hsl(var(--primary)/0.02)]',
-        onClick && 'cursor-pointer active:scale-[0.99]',
-        selected && 'bg-[hsl(var(--primary)/0.05)]',
+        'border-b border-border/50 transition-colors',
+        'hover:bg-muted/30',
+        onClick && 'cursor-pointer active:bg-muted/50',
+        selected && 'bg-muted',
         className
       )}
     >
@@ -52,8 +55,8 @@ function TableHead({ children, className, sortable, sorted, sortDirection, onSor
     <th
       onClick={sortable ? onSort : undefined}
       className={cn(
-        'h-14 px-4 text-left align-middle font-black uppercase tracking-widest text-[hsl(var(--muted-foreground))] text-[10px]',
-        sortable && 'cursor-pointer select-none hover:text-[hsl(var(--primary))] transition-colors',
+        'h-12 px-4 text-left align-middle font-medium text-muted-foreground text-xs',
+        sortable && 'cursor-pointer select-none hover:text-foreground transition-colors',
         className
       )}
     >
@@ -87,22 +90,38 @@ function TableCell({ children, className }) {
 
 function TableEmpty({ children, className, colSpan }) {
   return (
-    <tr>
+    <TableRow className="hover:bg-transparent">
       <td
         colSpan={colSpan}
         className={cn(
-          'h-32 text-center text-[hsl(var(--muted-foreground))] font-semibold',
+          'h-32 text-center text-muted-foreground font-medium',
           className
         )}
       >
         <div className="flex flex-col items-center justify-center gap-2">
-          <div className="h-12 w-12 rounded-full bg-[hsl(var(--muted)/0.5)] flex items-center justify-center">
-            <ChevronsUpDown className="h-6 w-6 opacity-20" />
+          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+            <ChevronsUpDown className="h-5 w-5 text-muted-foreground/50" />
           </div>
           {children || 'No results found.'}
         </div>
       </td>
-    </tr>
+    </TableRow>
+  )
+}
+
+function TableSkeleton({ columns, rows = 5 }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, i) => (
+        <TableRow key={`skeleton-${i}`} className="hover:bg-transparent">
+          {Array.from({ length: columns }).map((_, j) => (
+            <TableCell key={`cell-${j}`}>
+              <div className="h-4 w-full rounded-sm skeleton-shimmer" />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
   )
 }
 
@@ -131,7 +150,7 @@ function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-lg"
+          className="h-8 w-8 rounded-md"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -153,9 +172,10 @@ function TablePagination({
               <Button
                 key={pageNum}
                 variant={currentPage === pageNum ? 'default' : 'ghost'}
+                size="sm"
                 className={cn(
-                  'h-9 w-9 rounded-lg font-bold text-xs',
-                  currentPage === pageNum ? 'shadow-md glow-primary' : ''
+                  'h-8 w-8 rounded-md font-bold text-xs',
+                  currentPage === pageNum ? 'shadow-sm' : ''
                 )}
                 onClick={() => onPageChange(pageNum)}
               >
@@ -167,7 +187,7 @@ function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-lg"
+          className="h-8 w-8 rounded-md"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -263,7 +283,7 @@ function DataTable({
           onPageChange={setCurrentPage}
           pageSize={pageSize}
           totalItems={data.length}
-          className="rounded-2xl border border-[hsl(var(--border)/0.5)] shadow-sm"
+          className="rounded-lg border border-border shadow-sm"
         />
       )}
     </div>
@@ -279,5 +299,6 @@ export {
   TableCell,
   TableEmpty,
   TablePagination,
+  TableSkeleton,
   DataTable,
 }

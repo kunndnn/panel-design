@@ -1,4 +1,5 @@
 import { useEffect, useRef, createContext, useContext } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
@@ -34,11 +35,11 @@ function Modal({ children, open, onOpenChange }) {
     return () => document.removeEventListener('keydown', handleEscape)
   }, [open, onOpenChange])
 
-  if (!open) return null
-
   return (
-    <ModalContext.Provider value={{ onOpenChange }}>
-      {children}
+    <ModalContext.Provider value={{ onOpenChange, open }}>
+      <AnimatePresence>
+        {open && children}
+      </AnimatePresence>
     </ModalContext.Provider>
   )
 }
@@ -47,10 +48,13 @@ function ModalOverlay({ className }) {
   const { onOpenChange } = useContext(ModalContext)
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
       className={cn(
-        'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm',
-        'animate-in',
+        'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm',
         className
       )}
       onClick={() => onOpenChange(false)}
@@ -89,21 +93,24 @@ function ModalContent({ children, className }) {
   }, [])
 
   return (
-    <div
+    <motion.div
       ref={contentRef}
       role="dialog"
       aria-modal="true"
+      initial={{ opacity: 0, scale: 0.95, y: -20, x: '-50%' }}
+      animate={{ opacity: 1, scale: 1, y: '-50%', x: '-50%' }}
+      exit={{ opacity: 0, scale: 0.95, y: -20, x: '-50%' }}
+      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      style={{ left: '50%', top: '50%' }}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2',
-        'rounded-lg border border-[hsl(var(--border))]',
-        'bg-[hsl(var(--background))] p-6',
-        'shadow-(--shadow-xl)',
-        'animate-scale-in',
+        'fixed z-50 w-full max-w-lg',
+        'rounded-lg border border-border',
+        'bg-background p-6 shadow-xl',
         className
       )}
     >
       {children}
-    </div>
+    </motion.div>
   )
 }
 

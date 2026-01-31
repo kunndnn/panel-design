@@ -9,16 +9,14 @@ function AppShellContent({ children }) {
   const location = useLocation()
 
   return (
-    <div className="relative min-h-screen bg-[hsl(var(--background))] overflow-hidden">
-      {/* Background Mesh */}
-      <div className="mesh-bg" />
+    <div className="relative min-h-screen bg-background overflow-hidden">
 
       <Sidebar />
       <Navbar />
 
       <main
         className={cn(
-          'min-h-screen pt-(--navbar-height) transition-all duration-(--transition-slow) ease-in-out',
+          'min-h-screen pt-(--navbar-height) transition-all duration-300 ease-in-out',
           isCollapsed
             ? 'lg:pl-(--sidebar-collapsed-width)'
             : 'lg:pl-(--sidebar-width)'
@@ -28,10 +26,13 @@ function AppShellContent({ children }) {
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 10, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.99 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{
+                duration: 0.24,
+                ease: [0.16, 1, 0.3, 1] // easeOutExpo equivalent
+              }}
             >
               {children}
             </motion.div>
